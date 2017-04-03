@@ -1,5 +1,7 @@
 package io.github.ideiudicibus.regione.lazio.cpf.ordini.service;
 
+import java.util.logging.Logger;
+
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.ws.BindingProvider;
 
@@ -22,7 +24,7 @@ public class OrdiniWebServiceWrapperImpl implements OrdiniService {
     private static String noTokenFound="NO_TOKEN_FOUND";
     private String password;
     private String username;
-
+    private static final Logger LOGGER = Logger.getLogger( OrdiniWebServiceWrapperImpl.class.getName() );
     
     public OrdiniWebServiceWrapperImpl(String username,String password){
 	this.password=password;
@@ -44,24 +46,29 @@ public class OrdiniWebServiceWrapperImpl implements OrdiniService {
 	catch(Exception e){
 	    OrdiniServiceException ordiniServiceException=new OrdiniServiceException(e.getMessage());
 	    ordiniServiceException.fillInStackTrace();
-	    
+	    LOGGER.severe(ordiniServiceException.getMessage());
 	    throw ordiniServiceException;
 	}
 	if (token.equals(noTokenFound)){
 	    String message="cannot retrieve a security token from ordini service";
+	    LOGGER.severe(message);
 	    throw new OrdiniServiceException(message);
 	}
+	
 	return token;
 
     }
 
     @Override
     public String getOrdineDocument(String idOrdine) throws OrdiniServiceException {
-	
+    
+    	
+	LOGGER.info("get ordine: "+idOrdine+ " document from : "+ricezioneOrdiniEndpointURL);
+    
 	RicezioneOrdiniService ricezioneOrdiniService =new RicezioneOrdiniService();
 	RicezioneOrdini ricezioneOrdini=ricezioneOrdiniService.getRicezioneOrdiniPort();
 	//rebind the endpoint 
-        ((BindingProvider)ricezioneOrdini).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, ricezioneOrdiniEndpointURL);   
+    ((BindingProvider)ricezioneOrdini).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, ricezioneOrdiniEndpointURL);   
 	ListaResult lista=ricezioneOrdini.ricercaOrdini(this.getSecurityToken(), idOrdine, null, null, null, null, null);
 	Integer codiceOrdine=lista.getListaOrdini().get(0);
 	PrelevaResult pr=ricezioneOrdini.prelevaOrdine(this.getSecurityToken(),codiceOrdine );

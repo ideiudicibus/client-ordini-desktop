@@ -21,14 +21,17 @@ public class OrdiniServiceTest {
     private OrdiniService ordiniService;
     private InputStream is;
     private Properties prop;
+    
     @Before
-    public void construcService() throws IOException{
+    public void constructService() throws IOException{
 	String u,p;
 	prop = new Properties();
 	is =this.getClass().getResourceAsStream(this.getClass().getSimpleName()+".properties");
 	prop.load(is);
 	u=prop.getProperty("username");
 	p=prop.getProperty("password");
+	assertNotNull(u);
+	assertNotNull(p);
 	
 	ordiniService=new OrdiniWebServiceWrapperImpl(u,p);
 	
@@ -60,9 +63,15 @@ public class OrdiniServiceTest {
     }
     
     @After
-    public void releaseResources(){
+    public void releaseResources() throws Exception{
 	
 	ordiniService=null;
+	prop=null;
+	if(is!=null){
+		
+		is.close();
+	}
+	
     }
 
 }
