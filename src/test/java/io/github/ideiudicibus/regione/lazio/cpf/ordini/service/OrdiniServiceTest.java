@@ -6,9 +6,11 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
 import java.util.Iterator;
 import java.util.Properties;
 
+import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,28 +40,29 @@ public class OrdiniServiceTest {
 	
     }
     @Test
-    public void testGetOrdine() {
+    public void testGetOrdine()  {
 	
-	String ordineId=prop.getProperty("testGetOrdineId.ordineId");
+	String ordineId=prop.getProperty("testGetOrdineId.ordineId-2");
 	assertNotNull(ordineId);
-	try {
-	    String ordineXml=(String) ordiniService.getOrdineDocument(ordineId);
+	
+	    String returnString=(String) ordiniService.getOrdineDocument(ordineId);
+	    JSONObject payload=new JSONObject(returnString);
 	    
+	    String ordineXml=(String) payload.get("xmlDocument");
 	    Iterable<Node> i = new JAXPXPathEngine().selectNodes("//DocumentID", Input.fromString(ordineXml).build());
+	    
 	    assertNotNull(i);
 	    int count = 0;
+	    if(i.iterator().hasNext()){
 	    for (Iterator<Node> it = i.iterator(); it.hasNext();) {
 	        count++;
 	        Node node = it.next();
 	        assertEquals("DocumentID", node.getNodeName());
 	        assertEquals(ordineId,node.getTextContent());
 	    }
-	} catch (OrdiniServiceException e) {
-	   
-	    e.printStackTrace();
-	    fail();
-	}
-	
+	    }
+	    
+	    
     }
     
     @After

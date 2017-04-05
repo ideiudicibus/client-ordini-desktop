@@ -8,7 +8,7 @@ public class OrdiniServiceException extends Exception {
 
     /**
      * 
-     */
+    */
     private static final long serialVersionUID = -1575515465464305854L;
     
     public OrdiniServiceException(String message) {
