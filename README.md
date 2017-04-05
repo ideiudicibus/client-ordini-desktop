@@ -15,3 +15,5 @@ username=
 password=
 testGetOrdineId.ordineId= 
 ```
+
+![client screenshot](/src/test/resources/screenshot/client-ordini-desktop.png?raw=true "client ordini desktop")
